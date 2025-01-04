@@ -6,8 +6,9 @@ import (
 
 func TestLoadConfig(t *testing.T) {
 	res, err := LoadConfig()
+
 	if err != nil {
-		t.Errorf("There was an error loading")
+		t.Errorf("There was an error loading Config %v", err)
 	}
 
 	if res.Port != PORT {

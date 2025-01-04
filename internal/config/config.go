@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	"github.com/caarlos0/env/v6"
 	"github.com/joho/godotenv"
 )
@@ -19,6 +21,8 @@ func LoadConfig() (*Config, error) {
 	cfg := Config{}
 
 	err = env.Parse(&cfg)
+	fmt.Println(cfg)
+
 	if err != nil {
 		return nil, err
 	}
