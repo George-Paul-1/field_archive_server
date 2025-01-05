@@ -2,17 +2,15 @@ package server
 
 import (
 	"field_archive/server/internal/config"
-	"net/http"
+	"field_archive/server/routes"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Start(cfg *config.Config) {
+	log.Print("Starting Server...")
 	router := gin.Default()
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Hello World!",
-		})
-	})
+	routes.DefineRoutes(router)
 	router.Run(cfg.Port)
 }

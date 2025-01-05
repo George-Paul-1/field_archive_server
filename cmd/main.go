@@ -12,5 +12,4 @@ func main() {
 		log.Fatalf("Error loading Config %v", err)
 	}
 	server.Start(cfg)
-
 }
