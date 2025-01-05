@@ -7,9 +7,9 @@ import (
 )
 
 func DefineRoutes(router *gin.Engine) {
-	router.GET("/", func(c *gin.Context) {
+	router.GET("/test", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"message": "Hello World!",
+			"message": "test",
 		})
 	})
 }
