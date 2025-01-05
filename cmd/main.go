@@ -2,9 +2,13 @@ package main
 
 import (
 	"context"
+	"field_archive/server/handlers"
 	"field_archive/server/internal/config"
 	"field_archive/server/internal/database"
+	"field_archive/server/internal/server"
 	"field_archive/server/repositories"
+	"field_archive/server/routes"
+	"field_archive/server/services"
 	"fmt"
 	"log"
 )
@@ -14,16 +18,16 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error loading Config %v", err)
 	}
-	// server.Start(cfg, routes.DefineRoutes)
-	conn, err := database.Connect(context.Background(), cfg)
 	if err != nil {
 		fmt.Println(err)
 	}
-	repo := repositories.NewRecordingRepo(conn)
-	recording, err := repo.GetByID(1, context.Background())
+	db, err := database.Connect(context.Background(), cfg)
 	if err != nil {
-		fmt.Println("Error:", err)
-	} else {
-		fmt.Printf("Fetched recording: %+v\n", recording)
+		log.Fatalf("Couldn't connect to Database %v", err)
 	}
+	repo := repositories.NewRecordingRepo(db)
+	service := services.NewRecordingService(repo)
+	handler := handlers.NewRecordingHandler(service)
+
+	server.Start(cfg, routes.DefineRoutes, handler)
 }

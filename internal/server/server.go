@@ -1,6 +1,7 @@
 package server
 
 import (
+	"field_archive/server/handlers"
 	"field_archive/server/internal/config"
 	"log"
 	"net/http"
@@ -8,10 +9,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Start(cfg *config.Config, DefineRoutes func(*gin.Engine)) {
+func Start(cfg *config.Config, DefineRoutes func(*gin.Engine, *handlers.RecordingHandler), h *handlers.RecordingHandler) {
 	log.Print("Starting Server...")
 	router := gin.Default()
-	DefineRoutes(router)
+	DefineRoutes(router, h)
 
 	server := &http.Server{
 		Addr:    cfg.Port,

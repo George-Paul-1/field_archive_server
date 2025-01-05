@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"field_archive/server/handlers"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -12,7 +13,9 @@ import (
 func TestDefineRoutes(t *testing.T) {
 	// Simulate a test HTTP request
 	router := gin.Default()
-	DefineRoutes(router)
+
+	h := handlers.RecordingHandler{}
+	DefineRoutes(router, &h)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/test", nil)

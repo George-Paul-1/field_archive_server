@@ -59,7 +59,6 @@ func (r *RecordingRepoImplement) GetByID(id int, ctx context.Context) (entities.
 		"id": id,
 	}
 	var recording entities.Recording
-
 	err := r.conn.DB.QueryRow(ctx, query, args).Scan(
 		&recording.ID,
 		&recording.Title,
@@ -83,6 +82,18 @@ func (r *RecordingRepoImplement) GetByID(id int, ctx context.Context) (entities.
 		}
 		return entities.Recording{}, fmt.Errorf("unable to fetch recording %w", err)
 	}
-
 	return recording, nil
+}
+
+func (r *RecordingRepoImplement) Update(recording entities.Recording, ctx context.Context) error {
+	return nil
+}
+
+func (r *RecordingRepoImplement) Delete(id int, ctx context.Context) error {
+	return nil
+}
+
+func (r *RecordingRepoImplement) List(ctx context.Context) ([]entities.Recording, error) {
+	slice := []entities.Recording{}
+	return slice, nil
 }
