@@ -6,11 +6,26 @@ import (
 	"log"
 	"sync"
 
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+type Database interface {
+	Exec(ctx context.Context, query string, args ...any) (pgconn.CommandTag, error)
+	QueryRow(ctx context.Context, query string, args ...any) pgx.Row
+}
+
 type Postgres struct {
 	DB *pgxpool.Pool
+}
+
+func (p *Postgres) Exec(ctx context.Context, query string, args ...any) (pgconn.CommandTag, error) {
+	return p.DB.Exec(ctx, query, args...)
+}
+
+func (p *Postgres) QueryRow(ctx context.Context, query string, args ...any) pgx.Row {
+	return p.DB.QueryRow(ctx, query, args...)
 }
 
 var (

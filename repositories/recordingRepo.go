@@ -18,7 +18,7 @@ type RecordingRepository interface {
 }
 
 type RecordingRepoImplement struct {
-	conn *database.Postgres
+	conn database.Database
 }
 
 func NewRecordingRepo(db *database.Postgres) *RecordingRepoImplement {
@@ -32,7 +32,7 @@ func (r *RecordingRepoImplement) Insert(recording entities.Recording, ctx contex
 		`duration, format, description, equipment, file_size, channels, license) ` +
 		`VALUES ` +
 		`(@title, @audio_location, @date_uploaded, @recording_date, @location_id, @duration, @format, @description, @equipment, @file_Size, @channels, @license)`
-	args := pgx.NamedArgs{
+	args := map[string]interface{}{
 		"title":          recording.Title,
 		"audio_location": recording.AudioLocation,
 		"date_uploaded":  recording.DateUploaded,
@@ -46,7 +46,7 @@ func (r *RecordingRepoImplement) Insert(recording entities.Recording, ctx contex
 		"channels":       recording.Channels,
 		"license":        recording.License,
 	}
-	_, err := r.conn.DB.Exec(ctx, query, args)
+	_, err := r.conn.Exec(ctx, query, args)
 	if err != nil {
 		return fmt.Errorf("unable to insert row: %w", err)
 	}
@@ -59,7 +59,7 @@ func (r *RecordingRepoImplement) GetByID(id int, ctx context.Context) (entities.
 		"id": id,
 	}
 	var recording entities.Recording
-	err := r.conn.DB.QueryRow(ctx, query, args).Scan(
+	err := r.conn.QueryRow(ctx, query, args).Scan(
 		&recording.ID,
 		&recording.Title,
 		&recording.AudioLocation,
