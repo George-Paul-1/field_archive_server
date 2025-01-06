@@ -9,7 +9,6 @@ import (
 	"field_archive/server/repositories"
 	"field_archive/server/routes"
 	"field_archive/server/services"
-	"fmt"
 	"log"
 )
 
@@ -17,9 +16,6 @@ func main() {
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Error loading Config %v", err)
-	}
-	if err != nil {
-		fmt.Println(err)
 	}
 	db, err := database.Connect(context.Background(), cfg)
 	if err != nil {
