@@ -11,7 +11,7 @@ import (
 
 type RecordingRepository interface {
 	Insert(recording entities.Recording, ctx context.Context) error
-	GetByID(id int, ctx context.Context) (entities.Recording, error)
+	GetRowByID(id int, ctx context.Context) (entities.Recording, error)
 	Update(recording entities.Recording, ctx context.Context) error
 	Delete(id int, ctx context.Context) error
 	List(ctx context.Context) ([]entities.Recording, error)
@@ -53,7 +53,7 @@ func (r *RecordingRepoImplement) Insert(recording entities.Recording, ctx contex
 	return nil
 }
 
-func (r *RecordingRepoImplement) GetByID(id int, ctx context.Context) (entities.Recording, error) {
+func (r *RecordingRepoImplement) GetRowByID(id int, ctx context.Context) (entities.Recording, error) {
 	query := `SELECT * FROM recordings WHERE id=@id`
 	args := pgx.NamedArgs{
 		"id": id,

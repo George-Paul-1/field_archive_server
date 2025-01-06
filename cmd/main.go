@@ -13,17 +13,23 @@ import (
 )
 
 func main() {
+	// Loading configuration
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Error loading Config %v", err)
 	}
+
+	// Building database connection
 	db, err := database.Connect(context.Background(), cfg)
 	if err != nil {
 		log.Fatalf("Couldn't connect to Database %v", err)
 	}
+
+	// Establishing 'recordings' interactors
 	repo := repositories.NewRecordingRepo(db)
 	service := services.NewRecordingService(repo)
 	handler := handlers.NewRecordingHandler(service)
 
+	// Starting server
 	server.Start(cfg, routes.DefineRoutes, handler)
 }

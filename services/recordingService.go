@@ -19,7 +19,7 @@ func (s *RecordingService) GetByID(id int, ctx context.Context) (entities.Record
 	if id < 1 {
 		return entities.Recording{}, fmt.Errorf("id must be no less than 1")
 	}
-	recording, err := s.repo.GetByID(id, ctx)
+	recording, err := s.repo.GetRowByID(id, ctx)
 	if err != nil {
 		return entities.Recording{}, fmt.Errorf("service: problem retrieving recording by ID, %w", err)
 	}
