@@ -86,7 +86,6 @@ func (r *RecordingRepoImplement) GetRowByID(id int, ctx context.Context) (entiti
 }
 
 func (r *RecordingRepoImplement) Update(recording entities.Recording, ctx context.Context) error {
-	fmt.Println("UPDATE CALLED")
 	query := `UPDATE recordings ` +
 		`SET title = @title, audio_location = @audio_location, ` +
 		`artwork_location = @artwork_location, date_uploaded = @date_uploaded, ` +
