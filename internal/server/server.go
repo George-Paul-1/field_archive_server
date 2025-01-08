@@ -12,6 +12,7 @@ import (
 func Start(cfg *config.Config, DefineRoutes func(*gin.Engine, *handlers.RecordingHandler), h *handlers.RecordingHandler) {
 	log.Print("Starting Server...")
 	router := gin.Default()
+	router.Use(handlers.CORSMiddleware(cfg))
 	DefineRoutes(router, h)
 
 	server := &http.Server{

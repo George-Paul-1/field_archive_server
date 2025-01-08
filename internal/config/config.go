@@ -8,6 +8,7 @@ import (
 type Config struct {
 	DB_Url string `env:"DATABASE_URL,required"`
 	Port   string `env:"PORT,required"`
+	Origin string `env:"CLI_ORIGIN"`
 }
 
 func LoadConfig() (*Config, error) {

@@ -3,6 +3,7 @@ package routes
 import (
 	"field_archive/server/handlers"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,5 +22,15 @@ func DefineRoutes(router *gin.Engine, h *handlers.RecordingHandler) {
 
 	router.GET("/recordings/list/:limit", func(c *gin.Context) {
 		h.ListItems(c)
+	})
+
+	router.GET("/audio/*filepath", func(c *gin.Context) {
+		path := c.Param("filepath")
+
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
+			return
+		}
+		c.File(path)
 	})
 }
