@@ -14,6 +14,7 @@ import (
 type Database interface {
 	Exec(ctx context.Context, query string, args ...any) (pgconn.CommandTag, error)
 	QueryRow(ctx context.Context, query string, args ...any) pgx.Row
+	Query(ctx context.Context, query string, args ...interface{}) (pgx.Rows, error)
 }
 
 type Postgres struct {
@@ -26,6 +27,10 @@ func (p *Postgres) Exec(ctx context.Context, query string, args ...any) (pgconn.
 
 func (p *Postgres) QueryRow(ctx context.Context, query string, args ...any) pgx.Row {
 	return p.DB.QueryRow(ctx, query, args...)
+}
+
+func (p *Postgres) Query(ctx context.Context, query string, args ...interface{}) (pgx.Rows, error) {
+	return p.DB.Query(ctx, query, args)
 }
 
 var (

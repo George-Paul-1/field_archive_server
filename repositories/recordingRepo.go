@@ -10,11 +10,11 @@ import (
 )
 
 type RecordingRepository interface {
-	Insert(recording entities.Recording, ctx context.Context) error
+	Insert(recording entities.Recording, ctx context.Context) (int, error)
 	GetRowByID(id int, ctx context.Context) (entities.Recording, error)
 	Update(recording entities.Recording, ctx context.Context) error
 	Delete(id int, ctx context.Context) error
-	List(ctx context.Context) ([]entities.Recording, error)
+	List(ctx context.Context, limit int) ([]entities.Recording, error)
 }
 
 type RecordingRepoImplement struct {
@@ -25,13 +25,15 @@ func NewRecordingRepo(db *database.Postgres) *RecordingRepoImplement {
 	return &RecordingRepoImplement{conn: db}
 }
 
-func (r *RecordingRepoImplement) Insert(recording entities.Recording, ctx context.Context) error {
+func (r *RecordingRepoImplement) Insert(recording entities.Recording, ctx context.Context) (int, error) {
 
 	query := `INSERT INTO recordings` +
 		`(id, title, audio_location, artwork_location, date_uploaded, recording_date, location_id, ` +
 		`duration, format, description, equipment, file_size, channels, license) ` +
 		`VALUES ` +
-		`(@title, @audio_location, @date_uploaded, @recording_date, @location_id, @duration, @format, @description, @equipment, @file_Size, @channels, @license)`
+		`(@title, @audio_location, @date_uploaded, @recording_date, @location_id, @duration, ` +
+		`@format, @description, @equipment, @file_Size, @channels, @license) ` +
+		`RETURNING id`
 	args := map[string]interface{}{
 		"title":          recording.Title,
 		"audio_location": recording.AudioLocation,
@@ -46,11 +48,12 @@ func (r *RecordingRepoImplement) Insert(recording entities.Recording, ctx contex
 		"channels":       recording.Channels,
 		"license":        recording.License,
 	}
-	_, err := r.conn.Exec(ctx, query, args)
+	var id int
+	err := r.conn.QueryRow(ctx, query, args).Scan(&id)
 	if err != nil {
-		return fmt.Errorf("unable to insert row: %w", err)
+		return 0, fmt.Errorf("unable to insert row: %w", err)
 	}
-	return nil
+	return id, nil
 }
 
 func (r *RecordingRepoImplement) GetRowByID(id int, ctx context.Context) (entities.Recording, error) {
@@ -116,10 +119,53 @@ func (r *RecordingRepoImplement) Update(recording entities.Recording, ctx contex
 }
 
 func (r *RecordingRepoImplement) Delete(id int, ctx context.Context) error {
+	query := `DELETE FROM recordings WHERE id = @id`
+	args := pgx.NamedArgs{
+		"id": id,
+	}
+	_, err := r.conn.Exec(ctx, query, args)
+
+	if err != nil {
+		return fmt.Errorf("unable to Delete Row: %v", err)
+	}
 	return nil
 }
 
-func (r *RecordingRepoImplement) List(ctx context.Context) ([]entities.Recording, error) {
-	slice := []entities.Recording{}
-	return slice, nil
+func (r *RecordingRepoImplement) List(ctx context.Context, limit int) ([]entities.Recording, error) {
+	res := []entities.Recording{}
+	query := `SELECT * FROM recordings LIMIT = @limit`
+	args := pgx.NamedArgs{
+		"limit": limit,
+	}
+	rows, err := r.conn.Query(ctx, query, args)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		recording := entities.Recording{}
+		err := rows.Scan(
+			&recording.ID,
+			&recording.Title,
+			&recording.AudioLocation,
+			&recording.ArtworkLocation,
+			&recording.DateUploaded,
+			&recording.RecordingDate,
+			&recording.LocationID,
+			&recording.Duration,
+			&recording.Format,
+			&recording.Description,
+			&recording.Equipment,
+			&recording.Size,
+			&recording.Channels,
+			&recording.License,
+		)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, recording)
+	}
+
+	return res, nil
 }
