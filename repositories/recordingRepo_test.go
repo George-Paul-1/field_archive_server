@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"field_archive/server/entities"
+	"fmt"
 	"slices"
 	"testing"
 	"time"
@@ -91,13 +92,13 @@ func (m *MockDatabase) QueryRow(ctx context.Context, query string, args ...any) 
 	return m.mockQueryRow(ctx, query, args...)
 }
 
-func (m *MockDatabase) Query(ctx context.Context, query string, args ...interface{}) (pgx.Rows, error) {
+func (m *MockDatabase) Query(ctx context.Context, query string, args any) (pgx.Rows, error) {
 	return m.mockQuery(ctx, query, args)
 }
 
 // --------------------------------------------
 
-// REPOSITORY METHOD TESTS START HERE VV
+// REPOSITORY METHOD TESTS START HERE
 
 func TestInsert(t *testing.T) {
 	check := `INSERT INTO recordings` +
@@ -262,7 +263,7 @@ func TestDelete(t *testing.T) {
 
 func TestList(t *testing.T) {
 	ctx := context.Background()
-	check := `SELECT * FROM recordings LIMIT = @limit`
+	check := `SELECT * FROM recordings LIMIT $1::int`
 
 	expectedRecordings := []entities.Recording{
 		{
@@ -329,6 +330,8 @@ func TestList(t *testing.T) {
 				},
 			}, nil
 		}
+		fmt.Println(query)
+		fmt.Println(check)
 		return nil, errors.New("Query did not match Check")
 	}}
 	repo := &RecordingRepoImplement{conn: &mockDB}

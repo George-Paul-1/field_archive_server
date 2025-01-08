@@ -133,11 +133,8 @@ func (r *RecordingRepoImplement) Delete(id int, ctx context.Context) error {
 
 func (r *RecordingRepoImplement) List(ctx context.Context, limit int) ([]entities.Recording, error) {
 	res := []entities.Recording{}
-	query := `SELECT * FROM recordings LIMIT = @limit`
-	args := pgx.NamedArgs{
-		"limit": limit,
-	}
-	rows, err := r.conn.Query(ctx, query, args)
+	query := `SELECT * FROM recordings LIMIT $1::int`
+	rows, err := r.conn.Query(ctx, query, limit)
 	if err != nil {
 		return nil, err
 	}

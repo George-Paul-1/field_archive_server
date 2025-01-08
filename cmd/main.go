@@ -25,7 +25,7 @@ func main() {
 		log.Fatalf("Couldn't connect to Database %v", err)
 	}
 
-	// Establishing 'recordings' interactors
+	// Setting up 'recordings' interactors
 	repo := repositories.NewRecordingRepo(db)
 	service := services.NewRecordingService(repo)
 	handler := handlers.NewRecordingHandler(service)

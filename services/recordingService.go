@@ -25,3 +25,15 @@ func (s *RecordingService) GetByID(id int, ctx context.Context) (entities.Record
 	}
 	return recording, nil
 }
+
+func (s *RecordingService) ListItems(limit int, ctx context.Context) ([]entities.Recording, error) {
+	if limit < 1 {
+		return []entities.Recording{}, fmt.Errorf("limit can't be less than 1")
+	}
+	recordings, err := s.repo.List(ctx, limit)
+	if err != nil {
+		return []entities.Recording{}, fmt.Errorf("service: problem retrieving list, %w", err)
+	}
+
+	return recordings, nil
+}

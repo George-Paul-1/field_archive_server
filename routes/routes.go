@@ -18,4 +18,8 @@ func DefineRoutes(router *gin.Engine, h *handlers.RecordingHandler) {
 	router.GET("/recordings/:id", func(c *gin.Context) {
 		h.GetByID(c)
 	})
+
+	router.GET("/recordings/list/:limit", func(c *gin.Context) {
+		h.ListItems(c)
+	})
 }
