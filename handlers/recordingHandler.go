@@ -10,11 +10,11 @@ import (
 )
 
 type RecordingHandler struct {
-	service *services.RecordingService
+	Service services.RecordingService
 }
 
-func NewRecordingHandler(s *services.RecordingService) *RecordingHandler {
-	return &RecordingHandler{service: s}
+func NewRecordingHandler(s services.RecordingService) *RecordingHandler {
+	return &RecordingHandler{Service: s}
 }
 
 func (h *RecordingHandler) GetByID(c *gin.Context) {
@@ -26,7 +26,7 @@ func (h *RecordingHandler) GetByID(c *gin.Context) {
 		})
 		return
 	}
-	record, err := h.service.GetByID(id, c.Request.Context())
+	record, err := h.Service.GetByID(id, c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to fetch recording"})
 		return
@@ -43,7 +43,7 @@ func (h *RecordingHandler) ListItems(c *gin.Context) {
 		})
 		return
 	}
-	recordings, err := h.service.ListItems(limit, c.Request.Context())
+	recordings, err := h.Service.ListItems(limit, c.Request.Context())
 	fmt.Println(err)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

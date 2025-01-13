@@ -42,7 +42,7 @@ func (r *mockRepo) List(ctx context.Context, limit int) ([]entities.Recording, e
 func TestNewRecordingService(t *testing.T) {
 	r := repositories.NewRecordingRepo(&database.Postgres{})
 	s := NewRecordingService(r)
-	check := &RecordingService{repo: r}
+	check := &recordingService{repo: r}
 	assert.Equal(t, s, check)
 }
 
@@ -67,7 +67,7 @@ func TestGetByID(t *testing.T) {
 			return check, nil
 		},
 	}
-	s := &RecordingService{repo: mockRepo}
+	s := &recordingService{repo: mockRepo}
 	res, err := s.GetByID(1, context.Background())
 	assert.Equal(t, check, res)
 	if err != nil {
@@ -95,7 +95,7 @@ func TestListItems(t *testing.T) {
 			return check, nil
 		},
 	}
-	s := &RecordingService{repo: mockRepo}
+	s := &recordingService{repo: mockRepo}
 	res, err := s.ListItems(1, context.Background())
 	assert.Equal(t, res, check)
 	if err != nil {

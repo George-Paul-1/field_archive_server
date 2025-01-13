@@ -7,15 +7,20 @@ import (
 	"fmt"
 )
 
-type RecordingService struct {
+type RecordingService interface {
+	GetByID(id int, ctx context.Context) (entities.Recording, error)
+	ListItems(limit int, ctx context.Context) ([]entities.Recording, error)
+}
+
+type recordingService struct {
 	repo repositories.RecordingRepository
 }
 
-func NewRecordingService(repo repositories.RecordingRepository) *RecordingService {
-	return &RecordingService{repo: repo}
+func NewRecordingService(repo repositories.RecordingRepository) *recordingService {
+	return &recordingService{repo: repo}
 }
 
-func (s *RecordingService) GetByID(id int, ctx context.Context) (entities.Recording, error) {
+func (s *recordingService) GetByID(id int, ctx context.Context) (entities.Recording, error) {
 	if id < 1 {
 		return entities.Recording{}, fmt.Errorf("id must be no less than 1")
 	}
@@ -26,7 +31,7 @@ func (s *RecordingService) GetByID(id int, ctx context.Context) (entities.Record
 	return recording, nil
 }
 
-func (s *RecordingService) ListItems(limit int, ctx context.Context) ([]entities.Recording, error) {
+func (s *recordingService) ListItems(limit int, ctx context.Context) ([]entities.Recording, error) {
 	if limit < 1 {
 		return []entities.Recording{}, fmt.Errorf("limit can't be less than 1")
 	}
