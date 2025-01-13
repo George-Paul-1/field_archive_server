@@ -15,7 +15,7 @@ func CreateToken(username string, cfg config.Config) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"username": username,
-			"exp":      time.Now().Add(time.Minute * 10).Unix(),
+			"exp":      time.Now().Add(time.Minute * 10).Unix(), // 10 minute expiry time
 		})
 	secret := []byte(cfg.JwtSecret)
 	tokenString, err := token.SignedString(secret)
