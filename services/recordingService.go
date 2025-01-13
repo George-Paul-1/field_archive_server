@@ -39,6 +39,5 @@ func (s *recordingService) ListItems(limit int, ctx context.Context) ([]entities
 	if err != nil {
 		return []entities.Recording{}, fmt.Errorf("service: problem retrieving list, %w", err)
 	}
-
 	return recordings, nil
 }
