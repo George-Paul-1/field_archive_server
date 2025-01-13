@@ -11,7 +11,6 @@ import (
 )
 
 func TestDefineRoutes(t *testing.T) {
-	// Simulate a test HTTP request
 	router := gin.Default()
 
 	h := handlers.RecordingHandler{}
