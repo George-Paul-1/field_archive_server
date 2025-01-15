@@ -102,10 +102,10 @@ func (m *MockDatabase) Query(ctx context.Context, query string, args any) (pgx.R
 
 func TestInsert(t *testing.T) {
 	check := `INSERT INTO recordings` +
-		`(id, title, audio_location, artwork_location, date_uploaded, recording_date, location_id, ` +
+		`(id, title, audio_location, artwork_location, date_uploaded, recording_date, location_id, user_id, ` +
 		`duration, format, description, equipment, file_size, channels, license) ` +
 		`VALUES ` +
-		`(@title, @audio_location, @date_uploaded, @recording_date, @location_id, @duration, @format, @description, @equipment, @file_Size, @channels, @license) ` +
+		`(@title, @audio_location, @date_uploaded, @recording_date, @location_id, @user_id, @duration, @format, @description, @equipment, @file_Size, @channels, @license) ` +
 		`RETURNING id`
 
 	mockDB := &MockDatabase{
@@ -133,6 +133,7 @@ func TestInsert(t *testing.T) {
 		DateUploaded:  nil,
 		RecordingDate: time.Now(),
 		LocationID:    1,
+		UserID:        1,
 		Duration:      120,
 		Format:        "mp3",
 		Description:   "Test description",
@@ -158,6 +159,7 @@ func TestGetRowByID(t *testing.T) {
 		DateUploaded:    nil,
 		RecordingDate:   time.Date(2025, 1, 6, 20, 2, 57, 0, time.UTC),
 		LocationID:      1,
+		UserID:          1,
 		Duration:        120,
 		Format:          "mp3",
 		Description:     "test description",
@@ -181,13 +183,14 @@ func TestGetRowByID(t *testing.T) {
 					*(innerSlice[4].(**time.Time)) = nil
 					*(innerSlice[5].(*time.Time)) = time.Date(2025, 1, 6, 20, 2, 57, 0, time.UTC)
 					*(innerSlice[6].(*int)) = 1
-					*(innerSlice[7].(*int)) = 120
-					*(innerSlice[8].(*string)) = "mp3"
-					*(innerSlice[9].(*string)) = "test description"
-					*(innerSlice[10].(*string)) = "test equipment"
-					*(innerSlice[11].(*float64)) = 2048
-					*(innerSlice[12].(*string)) = "2"
-					*(innerSlice[13].(*string)) = "Creative Commons"
+					*(innerSlice[7].(*int)) = 1
+					*(innerSlice[8].(*int)) = 120
+					*(innerSlice[9].(*string)) = "mp3"
+					*(innerSlice[10].(*string)) = "test description"
+					*(innerSlice[11].(*string)) = "test equipment"
+					*(innerSlice[12].(*float64)) = 2048
+					*(innerSlice[13].(*string)) = "2"
+					*(innerSlice[14].(*string)) = "Creative Commons"
 					return nil
 				}}
 			}
@@ -211,7 +214,7 @@ func TestUpdate(t *testing.T) {
 	check := `UPDATE recordings ` +
 		`SET title = @title, audio_location = @audio_location, ` +
 		`artwork_location = @artwork_location, date_uploaded = @date_uploaded, ` +
-		`recording_date = @recording_date, location_id = @location_id, duration = @duration, ` +
+		`recording_date = @recording_date, location_id = @location_id, user_id = @user_id, duration = @duration, ` +
 		`format = @format, description = @description, equipment = @equipment, file_size = @file_size, ` +
 		`channels = @channels, license = @license ` +
 		`WHERE id = @id`
@@ -233,6 +236,7 @@ func TestUpdate(t *testing.T) {
 		DateUploaded:    nil,
 		RecordingDate:   time.Date(2025, 1, 6, 20, 2, 57, 0, time.UTC),
 		LocationID:      1,
+		UserID:          1,
 		Duration:        120,
 		Format:          "mp3",
 		Description:     "test description",
@@ -274,6 +278,7 @@ func TestList(t *testing.T) {
 			DateUploaded:    nil,
 			RecordingDate:   time.Date(2025, 1, 6, 20, 0, 0, 0, time.UTC),
 			LocationID:      1,
+			UserID:          1,
 			Duration:        180,
 			Format:          "mp3",
 			Description:     "Description 1",
@@ -290,6 +295,7 @@ func TestList(t *testing.T) {
 			DateUploaded:    nil,
 			RecordingDate:   time.Date(2025, 1, 7, 20, 0, 0, 0, time.UTC),
 			LocationID:      2,
+			UserID:          1,
 			Duration:        200,
 			Format:          "wav",
 			Description:     "Description 2",
@@ -318,13 +324,14 @@ func TestList(t *testing.T) {
 					*(dest[4].(**time.Time)) = recording.DateUploaded
 					*(dest[5].(*time.Time)) = recording.RecordingDate
 					*(dest[6].(*int)) = recording.LocationID
-					*(dest[7].(*int)) = recording.Duration
-					*(dest[8].(*string)) = recording.Format
-					*(dest[9].(*string)) = recording.Description
-					*(dest[10].(*string)) = recording.Equipment
-					*(dest[11].(*float64)) = recording.Size
-					*(dest[12].(*string)) = recording.Channels
-					*(dest[13].(*string)) = recording.License
+					*(dest[7].(*int)) = recording.UserID
+					*(dest[8].(*int)) = recording.Duration
+					*(dest[9].(*string)) = recording.Format
+					*(dest[10].(*string)) = recording.Description
+					*(dest[11].(*string)) = recording.Equipment
+					*(dest[12].(*float64)) = recording.Size
+					*(dest[13].(*string)) = recording.Channels
+					*(dest[14].(*string)) = recording.License
 					expectedRecordings = expectedRecordings[1:]
 					return nil
 				},

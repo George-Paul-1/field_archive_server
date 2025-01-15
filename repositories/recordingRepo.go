@@ -28,10 +28,10 @@ func NewRecordingRepo(db *database.Postgres) *RecordingRepoImplement {
 func (r *RecordingRepoImplement) Insert(recording entities.Recording, ctx context.Context) (int, error) {
 
 	query := `INSERT INTO recordings` +
-		`(id, title, audio_location, artwork_location, date_uploaded, recording_date, location_id, ` +
+		`(id, title, audio_location, artwork_location, date_uploaded, recording_date, location_id, user_id, ` +
 		`duration, format, description, equipment, file_size, channels, license) ` +
 		`VALUES ` +
-		`(@title, @audio_location, @date_uploaded, @recording_date, @location_id, @duration, ` +
+		`(@title, @audio_location, @date_uploaded, @recording_date, @location_id, @user_id, @duration, ` +
 		`@format, @description, @equipment, @file_Size, @channels, @license) ` +
 		`RETURNING id`
 	args := map[string]interface{}{
@@ -40,6 +40,7 @@ func (r *RecordingRepoImplement) Insert(recording entities.Recording, ctx contex
 		"date_uploaded":  recording.DateUploaded,
 		"recording_date": recording.RecordingDate,
 		"location_id":    recording.LocationID,
+		"user_id":        recording.UserID,
 		"duration":       recording.Duration,
 		"format":         recording.Format,
 		"description":    recording.Description,
@@ -70,6 +71,7 @@ func (r *RecordingRepoImplement) GetRowByID(id int, ctx context.Context) (entiti
 		&recording.DateUploaded,
 		&recording.RecordingDate,
 		&recording.LocationID,
+		&recording.UserID,
 		&recording.Duration,
 		&recording.Format,
 		&recording.Description,
@@ -92,7 +94,7 @@ func (r *RecordingRepoImplement) Update(recording entities.Recording, ctx contex
 	query := `UPDATE recordings ` +
 		`SET title = @title, audio_location = @audio_location, ` +
 		`artwork_location = @artwork_location, date_uploaded = @date_uploaded, ` +
-		`recording_date = @recording_date, location_id = @location_id, duration = @duration, ` +
+		`recording_date = @recording_date, location_id = @location_id, user_id = @user_id, duration = @duration, ` +
 		`format = @format, description = @description, equipment = @equipment, file_size = @file_size, ` +
 		`channels = @channels, license = @license ` +
 		`WHERE id = @id`
@@ -102,6 +104,7 @@ func (r *RecordingRepoImplement) Update(recording entities.Recording, ctx contex
 		"date_uploaded":  recording.DateUploaded,
 		"recording_date": recording.RecordingDate,
 		"location_id":    recording.LocationID,
+		"user_id":        recording.UserID,
 		"duration":       recording.Duration,
 		"format":         recording.Format,
 		"description":    recording.Description,
@@ -150,6 +153,7 @@ func (r *RecordingRepoImplement) List(ctx context.Context, limit int) ([]entitie
 			&recording.DateUploaded,
 			&recording.RecordingDate,
 			&recording.LocationID,
+			&recording.UserID,
 			&recording.Duration,
 			&recording.Format,
 			&recording.Description,

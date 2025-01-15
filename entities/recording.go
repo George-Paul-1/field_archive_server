@@ -10,6 +10,7 @@ type Recording struct {
 	DateUploaded    *time.Time
 	RecordingDate   time.Time
 	LocationID      int
+	UserID          int
 	Duration        int
 	Format          string
 	Description     string
