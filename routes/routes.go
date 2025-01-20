@@ -25,6 +25,8 @@ func DefineRoutes(router *gin.Engine, h *handlers.RecordingHandler) {
 	})
 
 	router.GET("/audio/*filepath", func(c *gin.Context) {
+
+		// TODO shift this code to handlers package
 		path := c.Param("filepath")
 
 		if _, err := os.Stat(path); os.IsNotExist(err) {
