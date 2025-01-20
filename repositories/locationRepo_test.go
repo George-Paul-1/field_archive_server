@@ -105,3 +105,17 @@ func TestUpdateLocation(t *testing.T) {
 	err := repo.Update(location, context.Background())
 	assert.NoError(t, err)
 }
+
+func TestDeleteLocation(t *testing.T) {
+	check := `DELETE FROM locations WHERE id = @id`
+	mockDB := MockDatabase{mockExec: func(ctx context.Context, query string, args ...any) (pgconn.CommandTag, error) {
+		if check == query {
+			return pgconn.CommandTag{}, nil
+		} else {
+			return pgconn.CommandTag{}, errors.New("DELETE ERROR: Query did not match check")
+		}
+	}}
+	repo := &LocationRepoImplement{conn: &mockDB}
+	err := repo.Delete(1, context.Background())
+	assert.NoError(t, err)
+}

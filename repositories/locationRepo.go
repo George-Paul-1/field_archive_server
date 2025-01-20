@@ -77,3 +77,15 @@ func (r *LocationRepoImplement) Update(location entities.Location, ctx context.C
 	}
 	return nil
 }
+
+func (r *LocationRepoImplement) Delete(id int, ctx context.Context) error {
+	query := `DELETE FROM locations WHERE id = @id`
+	args := pgx.NamedArgs{
+		"id": id,
+	}
+	_, err := r.conn.Exec(ctx, query, args)
+	if err != nil {
+		return fmt.Errorf("unable to delete row: %w", err)
+	}
+	return nil
+}
