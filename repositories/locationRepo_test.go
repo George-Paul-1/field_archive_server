@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -79,4 +80,28 @@ func TestGetLocationByID(t *testing.T) {
 	if location.ID != 1 {
 		t.Fatalf("GET ERROR: returning ids not equal")
 	}
+}
+
+func TestUpdateLocation(t *testing.T) {
+	check := `UPDATE locations SET name = @name, description = @description, geom = ST_SetSRID(ST_MakePoint(@longitude, @latitude), 4326) WHERE id = @id`
+	mockDB := &MockDatabase{
+		mockExec: func(ctx context.Context, query string, args ...any) (pgconn.CommandTag, error) {
+			if check == query {
+				return pgconn.CommandTag{}, nil
+			}
+			return pgconn.CommandTag{}, errors.New("Row not found")
+		},
+	}
+	repo := &LocationRepoImplement{conn: mockDB}
+	longitude := "1.00"
+	latitude := "2.00"
+	location := entities.Location{
+		ID:          1,
+		Name:        "Test Location",
+		Description: "Test Description",
+		Longitude:   &longitude,
+		Latitude:    &latitude,
+	}
+	err := repo.Update(location, context.Background())
+	assert.NoError(t, err)
 }
