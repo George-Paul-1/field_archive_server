@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"field_archive/server/entities"
+	"slices"
 	"testing"
 
 	"github.com/jackc/pgx/v5"
@@ -118,4 +119,45 @@ func TestDeleteLocation(t *testing.T) {
 	repo := &LocationRepoImplement{conn: &mockDB}
 	err := repo.Delete(1, context.Background())
 	assert.NoError(t, err)
+}
+
+func TestListLocations(t *testing.T) {
+	check := `SELECT id, name, description, ST_AsGeoJSON(geom) AS geom FROM locations LIMIT $1::int`
+
+	expectedLocations := []entities.Location{
+		{Name: "Test Location", Description: "Test Description", Geom: "Test Geom"},
+	}
+
+	mockDB := MockDatabase{
+		mockQuery: func(ctx context.Context, query string, args ...any) (pgx.Rows, error) {
+			if check == query {
+				return &MockRows{
+					mockNext: func() bool {
+						return len(expectedLocations) > 0
+					},
+					mockScan: func(dest ...any) error {
+						if len(expectedLocations) == 0 {
+							return errors.New("no more rows")
+						}
+						location := expectedLocations[0]
+						*(dest[0].(*int)) = 1
+						*(dest[1].(*string)) = location.Name
+						*(dest[2].(*string)) = location.Description
+						*(dest[3].(*string)) = location.Geom
+						expectedLocations = expectedLocations[1:]
+						return nil
+					},
+				}, nil
+			}
+			return nil, errors.New("query did not match check")
+		},
+	}
+	repo := &LocationRepoImplement{conn: &mockDB}
+	res, err := repo.List(context.Background(), 1)
+	if err != nil {
+		t.Errorf("Error listing locations: %v", err)
+	}
+	if slices.Equal(res, expectedLocations) {
+		t.Errorf("Error listing recordings!\nreceived: %v\nBut expected: %v", res, expectedLocations)
+	}
 }

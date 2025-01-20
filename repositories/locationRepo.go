@@ -89,3 +89,27 @@ func (r *LocationRepoImplement) Delete(id int, ctx context.Context) error {
 	}
 	return nil
 }
+
+func (r *LocationRepoImplement) List(ctx context.Context, limit int) ([]entities.Location, error) {
+	res := []entities.Location{}
+	query := `SELECT id, name, description, ST_AsGeoJSON(geom) AS geom FROM locations LIMIT $1::int`
+	rows, err := r.conn.Query(ctx, query, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		location := entities.Location{}
+		err := rows.Scan(
+			&location.ID,
+			&location.Name,
+			&location.Description,
+			&location.Geom)
+		if err != nil {
+			return nil, fmt.Errorf("unable to scan row: %w", err)
+		}
+		res = append(res, location)
+	}
+	return res, nil
+}
