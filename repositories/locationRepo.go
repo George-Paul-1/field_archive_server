@@ -61,3 +61,19 @@ func (r *LocationRepoImplement) GetRowByID(id int, ctx context.Context) (entitie
 	}
 	return location, nil
 }
+
+func (r *LocationRepoImplement) Update(location entities.Location, ctx context.Context) error {
+	query := `UPDATE locations SET name = @name, description = @description, geom = ST_SetSRID(ST_MakePoint(@longitude, @latitude), 4326) WHERE id = @id`
+	args := pgx.NamedArgs{
+		"id":          location.ID,
+		"name":        location.Name,
+		"description": location.Description,
+		"longitude":   location.Longitude,
+		"latitude":    location.Latitude,
+	}
+	_, err := r.conn.Exec(ctx, query, args)
+	if err != nil {
+		return fmt.Errorf("unable to update row: %w", err)
+	}
+	return nil
+}
