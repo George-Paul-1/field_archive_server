@@ -28,7 +28,7 @@ func NewRecordingRepo(db *database.Postgres) *RecordingRepoImplement {
 func (r *RecordingRepoImplement) Insert(recording entities.Recording, ctx context.Context) (int, error) {
 
 	query := `INSERT INTO recordings` +
-		`(id, title, audio_location, artwork_location, date_uploaded, recording_date, location_id, user_id, ` +
+		`(title, audio_location, artwork_location, date_uploaded, recording_date, location_id, user_id, ` +
 		`duration, format, description, equipment, file_size, channels, license) ` +
 		`VALUES ` +
 		`(@title, @audio_location, @date_uploaded, @recording_date, @location_id, @user_id, @duration, ` +
