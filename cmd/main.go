@@ -26,8 +26,8 @@ func main() {
 	}
 
 	// Setting up 'recordings' interactors
-	repo := repositories.NewRecordingRepo(db)
-	service := services.NewRecordingService(repo)
+	recRepo := repositories.NewRecordingRepo(db)
+	service := services.NewRecordingService(recRepo)
 	handler := handlers.NewRecordingHandler(service)
 
 	// Starting server

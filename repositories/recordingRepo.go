@@ -34,7 +34,7 @@ func (r *RecordingRepoImplement) Insert(recording entities.Recording, ctx contex
 		`(@title, @audio_location, @date_uploaded, @recording_date, @location_id, @user_id, @duration, ` +
 		`@format, @description, @equipment, @file_Size, @channels, @license) ` +
 		`RETURNING id`
-	args := map[string]interface{}{
+	args := pgx.NamedArgs{
 		"title":          recording.Title,
 		"audio_location": recording.AudioLocation,
 		"date_uploaded":  recording.DateUploaded,

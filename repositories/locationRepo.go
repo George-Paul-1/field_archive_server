@@ -5,6 +5,8 @@ import (
 	"field_archive/server/entities"
 	"field_archive/server/internal/database"
 	"fmt"
+
+	"github.com/jackc/pgx/v5"
 )
 
 // TODO : Build location repository with CRUD functions
@@ -41,4 +43,21 @@ func (r *LocationRepoImplement) Insert(location entities.Location, ctx context.C
 		return 0, fmt.Errorf("unable to insert row: %w", err)
 	}
 	return id, nil
+}
+
+func (r *LocationRepoImplement) GetRowByID(id int, ctx context.Context) (entities.Location, error) {
+	query := `SELECT id, name, description, ST_AsGeoJSON(geom) AS geom FROM locations WHERE id = @id`
+	args := pgx.NamedArgs{
+		"id": id,
+	}
+	var location entities.Location
+	err := r.conn.QueryRow(ctx, query, args).Scan(
+		&location.ID,
+		&location.Name,
+		&location.Description,
+		&location.Geom)
+	if err != nil {
+		return entities.Location{}, fmt.Errorf("unable to get row: %w", err)
+	}
+	return location, nil
 }

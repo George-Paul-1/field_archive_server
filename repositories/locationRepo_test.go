@@ -49,3 +49,34 @@ func TestInsertLocation(t *testing.T) {
 		t.Fatalf("INSERT ERROR: returning ids not equal")
 	}
 }
+
+func TestGetLocationByID(t *testing.T) {
+	check := `SELECT id, name, description, ST_AsGeoJSON(geom) AS geom FROM locations WHERE id = @id`
+	mockDB := &MockDatabase{
+		mockQueryRow: func(ctx context.Context, query string, args ...any) pgx.Row {
+			if check == query {
+				return &MockRow{mockScan: func(dest ...any) error {
+					innerSlice, ok := dest[0].([]any)
+					if !ok {
+						return errors.New("Unable to access inner slice")
+					}
+					*(innerSlice[0].(*int)) = 1
+					*(innerSlice[1].(*string)) = "Test Location"
+					*(innerSlice[2].(*string)) = "Test Description"
+					*(innerSlice[3].(*string)) = "Test Geom"
+					return nil
+				}}
+			}
+			return &MockRow{mockScan: func(dest ...any) error {
+				return errors.New("Row not found")
+			},
+			}
+		},
+	}
+	repo := &LocationRepoImplement{conn: mockDB}
+	location, err := repo.GetRowByID(1, context.Background())
+	assert.NoError(t, err)
+	if location.ID != 1 {
+		t.Fatalf("GET ERROR: returning ids not equal")
+	}
+}
