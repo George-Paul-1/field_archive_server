@@ -2,6 +2,9 @@ package routes
 
 import (
 	"field_archive/server/handlers"
+	"field_archive/server/internal/config"
+	"field_archive/server/internal/database"
+	"field_archive/server/repositories"
 	"net/http"
 	"os"
 
@@ -34,5 +37,24 @@ func DefineRoutes(router *gin.Engine, h *handlers.RecordingHandler) {
 			return
 		}
 		c.File(path)
+	})
+
+	// TEST ROUTE FOR JS MAP
+
+	router.GET("/locations", func(c *gin.Context) {
+		cfg, err := config.LoadConfig()
+		if err != nil {
+			return
+		}
+		db, err := database.Connect(c.Request.Context(), cfg)
+		if err != nil {
+			return
+		}
+		repo := repositories.NewLocationRepo(db)
+		res, err := repo.List(c, 1)
+		if err != nil {
+			return
+		}
+		c.JSON(http.StatusOK, res)
 	})
 }
