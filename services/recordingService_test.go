@@ -17,6 +17,7 @@ type mockRepo struct {
 	mockUpdate     func(recording entities.Recording, ctx context.Context) error
 	mockDelete     func(id int, ctx context.Context) error
 	mockList       func(ctx context.Context, limit int) ([]entities.Recording, error)
+	mockCount      func(ctw context.Context) (int, error)
 }
 
 func (r *mockRepo) Insert(recording entities.Recording, ctx context.Context) (int, error) {
@@ -37,6 +38,10 @@ func (r *mockRepo) Delete(id int, ctx context.Context) error {
 
 func (r *mockRepo) List(ctx context.Context, limit int) ([]entities.Recording, error) {
 	return r.mockList(ctx, limit)
+}
+
+func (r *mockRepo) Count(ctx context.Context) (int, error) {
+	return r.mockCount(ctx)
 }
 
 func TestNewRecordingService(t *testing.T) {

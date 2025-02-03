@@ -15,6 +15,7 @@ type RecordingRepository interface {
 	Update(recording entities.Recording, ctx context.Context) error
 	Delete(id int, ctx context.Context) error
 	List(ctx context.Context, limit int) ([]entities.Recording, error)
+	Count(ctx context.Context) (int, error)
 }
 
 type RecordingRepoImplement struct {
@@ -169,4 +170,14 @@ func (r *RecordingRepoImplement) List(ctx context.Context, limit int) ([]entitie
 	}
 
 	return res, nil
+}
+
+func (r *RecordingRepoImplement) Count(ctx context.Context) (int, error) {
+	query := `SELECT COUNT(id) FROM recordings`
+	var count int
+	err := r.conn.QueryRow(ctx, query).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }

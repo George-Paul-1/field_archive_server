@@ -354,3 +354,35 @@ func TestList(t *testing.T) {
 	}
 
 }
+
+func TestCount(t *testing.T) {
+	ctx := context.Background()
+	check := `SELECT COUNT(id) FROM recordings`
+	expectedReturn := 1
+
+	mockDB := MockDatabase{mockQueryRow: func(ctx context.Context, query string, args ...any) pgx.Row {
+		if check == query {
+			return &MockRow{mockScan: func(dest ...any) error {
+				innerSlice, ok := dest[0].([]any)
+				if !ok {
+					return errors.New("Can't access inner slice")
+				}
+				*(innerSlice[0].(*int)) = 1
+				return nil
+			},
+			}
+		}
+		return &MockRow{mockScan: func(dest ...any) error {
+			return errors.New("row not found")
+		},
+		}
+	},
+	}
+	repo := &RecordingRepoImplement{conn: &mockDB}
+	id, err := repo.Count(ctx)
+	assert.Equal(t, id, expectedReturn)
+	if err != nil {
+		t.Errorf("Error testing Count method %v", err)
+	}
+
+}
