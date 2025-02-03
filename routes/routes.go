@@ -2,9 +2,6 @@ package routes
 
 import (
 	"field_archive/server/handlers"
-	"field_archive/server/internal/config"
-	"field_archive/server/internal/database"
-	"field_archive/server/repositories"
 	"net/http"
 	"os"
 
@@ -27,6 +24,10 @@ func DefineRoutes(router *gin.Engine, h *handlers.RecordingHandler) {
 		h.ListItems(c)
 	})
 
+	router.GET("/recordings/count", func(c *gin.Context) {
+		h.GetCount(c)
+	})
+
 	router.GET("/audio/*filepath", func(c *gin.Context) {
 
 		// TODO shift this code to handlers package
@@ -39,22 +40,4 @@ func DefineRoutes(router *gin.Engine, h *handlers.RecordingHandler) {
 		c.File(path)
 	})
 
-	// TEST ROUTE FOR JS MAP
-
-	router.GET("/locations", func(c *gin.Context) {
-		cfg, err := config.LoadConfig()
-		if err != nil {
-			return
-		}
-		db, err := database.Connect(c.Request.Context(), cfg)
-		if err != nil {
-			return
-		}
-		repo := repositories.NewLocationRepo(db)
-		res, err := repo.List(c, 1)
-		if err != nil {
-			return
-		}
-		c.JSON(http.StatusOK, res)
-	})
 }

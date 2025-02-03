@@ -53,3 +53,14 @@ func (h *RecordingHandler) ListItems(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, recordings)
 }
+
+func (h *RecordingHandler) GetCount(c *gin.Context) {
+	count, err := h.Service.GetCount(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "unable to get count",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, count)
+}

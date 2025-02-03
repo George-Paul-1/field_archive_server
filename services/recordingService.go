@@ -10,6 +10,7 @@ import (
 type RecordingService interface {
 	GetByID(id int, ctx context.Context) (entities.Recording, error)
 	ListItems(limit int, ctx context.Context) ([]entities.Recording, error)
+	GetCount(ctx context.Context) (int, error)
 }
 
 type recordingService struct {
@@ -40,4 +41,13 @@ func (s *recordingService) ListItems(limit int, ctx context.Context) ([]entities
 		return []entities.Recording{}, fmt.Errorf("service: problem retrieving list, %w", err)
 	}
 	return recordings, nil
+}
+
+func (s *recordingService) GetCount(ctx context.Context) (int, error) {
+	count, err := s.repo.Count(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("service: problem retrieving count, %w", err)
+	}
+	return count, nil
+
 }

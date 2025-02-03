@@ -16,6 +16,7 @@ import (
 type mockService struct {
 	mockGetByID   func(id int) (entities.Recording, error)
 	mockListItems func(limit int, ctx context.Context) ([]entities.Recording, error)
+	mockGetCount  func(ctx context.Context) (int, error)
 }
 
 func (m *mockService) GetByID(id int, ctx context.Context) (entities.Recording, error) {
@@ -24,6 +25,10 @@ func (m *mockService) GetByID(id int, ctx context.Context) (entities.Recording, 
 
 func (m *mockService) ListItems(limit int, ctx context.Context) ([]entities.Recording, error) {
 	return m.mockListItems(limit, ctx)
+}
+
+func (m *mockService) GetCount(ctx context.Context) (int, error) {
+	return m.mockGetCount(ctx)
 }
 
 func TestTestRoute(t *testing.T) {
